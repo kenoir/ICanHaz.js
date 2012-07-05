@@ -1,17 +1,15 @@
 /*!
 ICanHaz.js version 0.10 -- by @HenrikJoreteg
 More info at: http://icanhazjs.com
+ICanHaz.js -- by @HenrikJoreteg
 */
-(function () {
-/*!
-  ICanHaz.js -- by @HenrikJoreteg
-*/
-/*global  */
-(function () {
+
+(function (exports) {
     function trim(stuff) {
         if (''.trim) return stuff.trim();
         else return stuff.replace(/^\s+/, '').replace(/\s+$/, '');
     }
+
     var ich = {
         VERSION: "0.10",
         templates: {},
@@ -44,7 +42,12 @@ More info at: http://icanhazjs.com
                 };
             }
         },
-        
+
+        // Maybe we don't want to process the template at the same time we retrieve it
+        getTemplate: function(name) {
+          return ich.templates[name];
+        },
+
         // clears all retrieval functions and empties cache
         clearAll: function () {
             for (var key in ich.templates) {
@@ -81,16 +84,10 @@ More info at: http://icanhazjs.com
             }
         }
     };
-    
-    // Use CommonJS if applicable
-    if (typeof require !== 'undefined') {
-        module.exports = ich;
-    } else {
-        // else attach it to the window
-        window.ich = ich;
-    }
-    
+   
     if (typeof document !== 'undefined') {
+        // Just grab the templates now in case we've missed the DOMContentLoaded 
+        ich.grabTemplates();
         if (ich.$) {
             ich.$(function () {
                 ich.grabTemplates();
@@ -101,6 +98,13 @@ More info at: http://icanhazjs.com
             }, true);
         }
     }
-        
-})();
-})();
+
+  if (typeof define === 'function' && define.amd) {
+    define(function () {
+      return ich;
+    });
+  }
+
+  exports.ich = ich;
+
+})(this);
